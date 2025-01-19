@@ -1,0 +1,44 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'My first CFT'
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: "Instance Configuration"
+        Parameters:
+          - InstanceType
+          - KeyName
+    ParameterLabels:
+      InstanceType:
+        default: "t2.micro"
+      KeyName:
+        default: "abc.pem"
+
+Resources:
+    MyKeyPair:
+        Type: AWS::EC2::KeyPair
+        Properties:
+            KeyName: abc.pem
+            KeyType: rsa  # Options: rsa or ed25519
+
+    MyEC2Instance:
+        Type: 'AWS::EC2::Instance'
+        Properties:
+            InstanceType: t2.micro
+            KeyName: !Ref MyKeyPair
+            ImageId: 'ami-00c257e12d6828491'
+            Tags:
+                - Key: abc
+                  Value: MyEC2Instance
+
+Outputs:
+    InstanceID:
+        Description: 'Instance ID'
+        Value: !GetAtt MyEC2Instance.PublicIp
+    InstancePublicIp:
+        Description: 'Instance Public IP'
+        Value: !GetAtt MyEC2Instance.PublicDnsName
+    InstancePublicDns:
+        Description: "Public DNS of the EC2 instance"
+        Value: !GetAtt MyEC2Instance.PublicDnsName
